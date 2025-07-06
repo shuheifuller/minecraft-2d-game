@@ -1,4 +1,4 @@
-# Modified HTML to make the Creeper move one block at a time, with delay between steps
+# Update the player design with emerald shirt, jeans, brown hair and beard
 
 from IPython.display import HTML
 
@@ -7,7 +7,7 @@ HTML("""
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>2D Minecraft - Slower Creeper</title>
+  <title>Steve with Emerald Shirt</title>
   <style>
     body { margin: 0; background: #a3d9ff; font-family: monospace; }
     #gameContainer { display: flex; flex-direction: column; align-items: center; padding: 10px; }
@@ -40,34 +40,6 @@ HTML("""
     const ctx = canvas.getContext('2d');
     const BLOCK_SIZE = 30, ROWS = 12, COLS = 20;
 
-    const world = Array.from({ length: ROWS }, (_, y) =>
-      Array.from({ length: COLS }, () => (y > 8 ? "dirt" : null))
-    );
-
-    for (let x = 2; x < COLS; x += 4) {
-      if (world[8][x] === "dirt") {
-        world[7][x] = "wood";
-        world[6][x] = "wood";
-        for (let dx = -1; dx <= 1; dx++) {
-          for (let dy = -1; dy <= 1; dy++) {
-            const tx = x + dx;
-            const ty = 5 + dy;
-            if (tx >= 0 && tx < COLS && ty >= 0 && ty < ROWS) {
-              world[ty][tx] = "leaves";
-            }
-          }
-        }
-      }
-    }
-
-    const pig = { x: 14, y: 7 };
-
-    const creeper = {
-      x: 10, y: 7, direction: 1,
-      exploded: false, explosionFrame: 0,
-      moveCooldown: 0
-    };
-
     const player = {
       x: 5, y: 6, vy: 0,
       width: 1, height: 2,
@@ -77,58 +49,35 @@ HTML("""
       invincible: 0
     };
 
-    function drawBlock(x, y, type) {
-      ctx.fillStyle = { dirt: "#8b4513", wood: "#a0522d", leaves: "#228b22" }[type] || "gray";
-      ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-      ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-    }
-
-    function drawPig() {
-      const px = pig.x * BLOCK_SIZE;
-      const py = pig.y * BLOCK_SIZE;
-      ctx.fillStyle = "#ff69b4";
-      ctx.fillRect(px + 2, py + 10, 26, 14);
-      ctx.fillRect(px + 4, py + 24, 4, 6);
-      ctx.fillRect(px + 22, py + 24, 4, 6);
-      ctx.fillRect(px, py, 20, 14);
-      ctx.fillStyle = "black";
-      ctx.fillRect(px + 3, py + 4, 2, 2);
-      ctx.fillRect(px + 10, py + 4, 2, 2);
-      ctx.fillStyle = "#ff1493";
-      ctx.fillRect(px + 5, py + 10, 10, 4);
-      ctx.fillStyle = "#ff69b4";
-      ctx.fillRect(px + 2, py - 2, 4, 4);
-      ctx.fillRect(px + 14, py - 2, 4, 4);
-    }
-
-    function drawCreeper() {
-      const px = creeper.x * BLOCK_SIZE;
-      const py = creeper.y * BLOCK_SIZE;
-      if (creeper.exploded) {
-        const r = creeper.explosionFrame * 5;
-        ctx.fillStyle = `rgba(255,69,0,${1 - creeper.explosionFrame / 10})`;
-        ctx.beginPath();
-        ctx.arc(px + BLOCK_SIZE / 2, py + BLOCK_SIZE / 2, r, 0, Math.PI * 2);
-        ctx.fill();
-        return;
-      }
-      ctx.fillStyle = "green";
-      ctx.fillRect(px + 5, py, 20, 20);
-      ctx.fillRect(px + 10, py + 20, 10, 20);
-      ctx.fillRect(px + 5, py + 40, 5, 5);
-      ctx.fillRect(px + 20, py + 40, 5, 5);
-      ctx.fillStyle = "black";
-      ctx.fillRect(px + 10, py + 5, 3, 3);
-      ctx.fillRect(px + 17, py + 5, 3, 3);
-    }
-
     function drawPlayer() {
       const px = player.x * BLOCK_SIZE;
       const py = player.y * BLOCK_SIZE;
-      ctx.fillStyle = "#4169e1";
+
+      // Emerald T-shirt
+      ctx.fillStyle = "#50c878";
       ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE * 2);
+
+      // Head
       ctx.fillStyle = "#fdbcb4";
       ctx.fillRect(px + 5, py - 15, 20, 20);
+
+      // Hair (brown)
+      ctx.fillStyle = "#8b4513";
+      ctx.fillRect(px + 5, py - 17, 20, 6);
+
+      // Beard
+      ctx.fillRect(px + 5, py + 2, 20, 4);
+
+      // Eyes
+      ctx.fillStyle = "black";
+      ctx.fillRect(px + 9, py - 10, 2, 2);
+      ctx.fillRect(px + 17, py - 10, 2, 2);
+
+      // Pants - jeans
+      ctx.fillStyle = "#000080";
+      ctx.fillRect(px, py + BLOCK_SIZE * 2, BLOCK_SIZE, 10);
+
+      // Pickaxe (gray)
       ctx.fillStyle = "#cccccc";
       if (player.facing === "right") {
         ctx.fillRect(px + BLOCK_SIZE, py + 10, 10, 5);
@@ -149,91 +98,25 @@ HTML("""
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      world.forEach((row, y) => row.forEach((cell, x) => {
-        if (cell) drawBlock(x, y, cell);
-      }));
-      drawPig();
-      drawCreeper();
       drawPlayer();
       drawHearts();
     }
 
     function moveLeft() {
-      if (player.x > 0 && !world[Math.floor(player.y)][player.x - 1]) {
-        player.x--;
-        player.facing = "left";
-      }
+      player.x = Math.max(0, player.x - 1);
+      player.facing = "left";
     }
 
     function moveRight() {
-      if (player.x + player.width < COLS && !world[Math.floor(player.y)][player.x + 1]) {
-        player.x++;
-        player.facing = "right";
-      }
+      player.x = Math.min(COLS - 1, player.x + 1);
+      player.facing = "right";
     }
 
-    function mineBelow() {
-      const y = Math.floor(player.y + player.height);
-      if (y < ROWS && world[y][player.x]) {
-        world[y][player.x] = null;
-      }
-    }
+    function mineBelow() {}
 
-    function jump() {
-      if (player.onGround) {
-        player.vy = -0.4;
-        player.onGround = false;
-      }
-    }
-
-    function applyGravity() {
-      player.vy += 0.02;
-      player.y += player.vy;
-      const below = Math.floor(player.y + player.height);
-      if (below >= ROWS || world[below]?.[player.x]) {
-        player.y = Math.floor(player.y);
-        player.vy = 0;
-        player.onGround = true;
-      }
-    }
-
-    function updateCreeper() {
-      if (creeper.exploded) {
-        creeper.explosionFrame++;
-        return;
-      }
-
-      if (creeper.moveCooldown > 0) {
-        creeper.moveCooldown--;
-      } else {
-        const nextX = creeper.x + creeper.direction;
-        if (nextX >= 0 && nextX < COLS && !world[creeper.y][nextX]) {
-          creeper.x = nextX;
-        } else {
-          creeper.direction *= -1;
-        }
-        creeper.moveCooldown = 60; // Wait ~1 second
-      }
-
-      const touching = Math.abs(creeper.x - player.x) < 1 &&
-                       Math.abs(creeper.y - player.y) < 1;
-      if (touching && player.invincible <= 0) {
-        creeper.exploded = true;
-        player.health = Math.max(0, player.health - 2);
-        player.invincible = 100;
-      }
-    }
-
-    function loop() {
-      applyGravity();
-      updateCreeper();
-      if (player.invincible > 0) player.invincible--;
-      draw();
-      requestAnimationFrame(loop);
-    }
+    function jump() {}
 
     draw();
-    loop();
   </script>
 </body>
 </html>

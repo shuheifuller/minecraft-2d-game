@@ -1,4 +1,5 @@
-# Updating the HTML to include creeper explosion animation
+# Modified HTML to make the Creeper move one block at a time, with delay between steps
+
 from IPython.display import HTML
 
 HTML("""
@@ -6,7 +7,7 @@ HTML("""
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>2D Minecraft - Creeper Explosion</title>
+  <title>2D Minecraft - Slower Creeper</title>
   <style>
     body { margin: 0; background: #a3d9ff; font-family: monospace; }
     #gameContainer { display: flex; flex-direction: column; align-items: center; padding: 10px; }
@@ -15,8 +16,11 @@ HTML("""
     .ctrl-btn { padding: 10px 20px; background: #444; color: white; border: 2px solid #888;
                 font-size: 18px; border-radius: 5px; cursor: pointer; }
     #hearts { margin-bottom: 10px; }
-    .heart { width: 24px; height: 24px; background: red; clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 80%, 20% 100%, 0% 35%);
-             display: inline-block; margin-right: 4px; }
+    .heart {
+      width: 24px; height: 24px; background: red;
+      clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 80%, 20% 100%, 0% 35%);
+      display: inline-block; margin-right: 4px;
+    }
   </style>
 </head>
 <body>
@@ -34,14 +38,13 @@ HTML("""
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const BLOCK_SIZE = 30;
-    const ROWS = 12, COLS = 20;
+    const BLOCK_SIZE = 30, ROWS = 12, COLS = 20;
 
-    const world = Array.from({length: ROWS}, (_, y) =>
-      Array.from({length: COLS}, (_, x) => y > 8 ? "dirt" : null)
+    const world = Array.from({ length: ROWS }, (_, y) =>
+      Array.from({ length: COLS }, () => (y > 8 ? "dirt" : null))
     );
 
-    for (let x = 1; x < COLS; x += 4) {
+    for (let x = 2; x < COLS; x += 4) {
       if (world[8][x] === "dirt") {
         world[7][x] = "wood";
         world[6][x] = "wood";
@@ -49,7 +52,7 @@ HTML("""
           for (let dy = -1; dy <= 1; dy++) {
             const tx = x + dx;
             const ty = 5 + dy;
-            if (tx >= 0 && tx < COLS && ty >= 0) {
+            if (tx >= 0 && tx < COLS && ty >= 0 && ty < ROWS) {
               world[ty][tx] = "leaves";
             }
           }
@@ -61,13 +64,17 @@ HTML("""
 
     const creeper = {
       x: 10, y: 7, direction: 1,
-      exploded: false, explosionFrame: 0
+      exploded: false, explosionFrame: 0,
+      moveCooldown: 0
     };
 
     const player = {
-      x: 5, y: 6, vy: 0, width: 1, height: 2,
-      facing: "right", onGround: false,
-      health: 5, invincible: 0
+      x: 5, y: 6, vy: 0,
+      width: 1, height: 2,
+      facing: "right",
+      onGround: false,
+      health: 5,
+      invincible: 0
     };
 
     function drawBlock(x, y, type) {
@@ -76,7 +83,7 @@ HTML("""
       ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
     }
 
-    function drawPig(pig) {
+    function drawPig() {
       const px = pig.x * BLOCK_SIZE;
       const py = pig.y * BLOCK_SIZE;
       ctx.fillStyle = "#ff69b4";
@@ -94,19 +101,17 @@ HTML("""
       ctx.fillRect(px + 14, py - 2, 4, 4);
     }
 
-    function drawCreeper(c) {
-      const px = c.x * BLOCK_SIZE;
-      const py = c.y * BLOCK_SIZE;
-
-      if (c.exploded) {
-        const r = c.explosionFrame * 5;
-        ctx.fillStyle = `rgba(255,69,0,${1 - c.explosionFrame / 10})`;
+    function drawCreeper() {
+      const px = creeper.x * BLOCK_SIZE;
+      const py = creeper.y * BLOCK_SIZE;
+      if (creeper.exploded) {
+        const r = creeper.explosionFrame * 5;
+        ctx.fillStyle = `rgba(255,69,0,${1 - creeper.explosionFrame / 10})`;
         ctx.beginPath();
         ctx.arc(px + BLOCK_SIZE / 2, py + BLOCK_SIZE / 2, r, 0, Math.PI * 2);
         ctx.fill();
         return;
       }
-
       ctx.fillStyle = "green";
       ctx.fillRect(px + 5, py, 20, 20);
       ctx.fillRect(px + 10, py + 20, 10, 20);
@@ -123,7 +128,7 @@ HTML("""
       ctx.fillStyle = "#4169e1";
       ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE * 2);
       ctx.fillStyle = "#fdbcb4";
-      ctx.fillRect(px + 5, py - BLOCK_SIZE / 2, BLOCK_SIZE - 10, BLOCK_SIZE - 10);
+      ctx.fillRect(px + 5, py - 15, 20, 20);
       ctx.fillStyle = "#cccccc";
       if (player.facing === "right") {
         ctx.fillRect(px + BLOCK_SIZE, py + 10, 10, 5);
@@ -147,8 +152,8 @@ HTML("""
       world.forEach((row, y) => row.forEach((cell, x) => {
         if (cell) drawBlock(x, y, cell);
       }));
-      drawPig(pig);
-      drawCreeper(creeper);
+      drawPig();
+      drawCreeper();
       drawPlayer();
       drawHearts();
     }
@@ -168,9 +173,9 @@ HTML("""
     }
 
     function mineBelow() {
-      const by = Math.floor(player.y + player.height);
-      if (by < ROWS && world[by][player.x]) {
-        world[by][player.x] = null;
+      const y = Math.floor(player.y + player.height);
+      if (y < ROWS && world[y][player.x]) {
+        world[y][player.x] = null;
       }
     }
 
@@ -184,8 +189,8 @@ HTML("""
     function applyGravity() {
       player.vy += 0.02;
       player.y += player.vy;
-      const bottomY = Math.floor(player.y + player.height);
-      if (bottomY >= ROWS || world[bottomY]?.[player.x]) {
+      const below = Math.floor(player.y + player.height);
+      if (below >= ROWS || world[below]?.[player.x]) {
         player.y = Math.floor(player.y);
         player.vy = 0;
         player.onGround = true;
@@ -198,13 +203,20 @@ HTML("""
         return;
       }
 
-      if (Math.random() < 0.02) creeper.direction *= -1;
-      const newX = creeper.x + creeper.direction;
-      if (newX >= 0 && newX < COLS && !world[creeper.y][newX]) {
-        creeper.x = newX;
+      if (creeper.moveCooldown > 0) {
+        creeper.moveCooldown--;
+      } else {
+        const nextX = creeper.x + creeper.direction;
+        if (nextX >= 0 && nextX < COLS && !world[creeper.y][nextX]) {
+          creeper.x = nextX;
+        } else {
+          creeper.direction *= -1;
+        }
+        creeper.moveCooldown = 60; // Wait ~1 second
       }
 
-      const touching = Math.abs(creeper.x - player.x) < 1 && Math.abs(creeper.y - player.y) < 1;
+      const touching = Math.abs(creeper.x - player.x) < 1 &&
+                       Math.abs(creeper.y - player.y) < 1;
       if (touching && player.invincible <= 0) {
         creeper.exploded = true;
         player.health = Math.max(0, player.health - 2);

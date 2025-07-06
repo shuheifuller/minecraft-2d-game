@@ -1,50 +1,22 @@
+# Updating the HTML to include creeper explosion animation
+from IPython.display import HTML
+
+HTML("""
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>2D Minecraft - Improved</title>
+  <title>2D Minecraft - Creeper Explosion</title>
   <style>
-    body {
-      margin: 0;
-      background: #a3d9ff;
-      font-family: monospace;
-    }
-    #gameContainer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-    }
-    canvas {
-      border: 3px solid #333;
-      background: #87ceeb;
-      image-rendering: pixelated;
-    }
-    #controller {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .ctrl-btn {
-      padding: 10px 20px;
-      background: #444;
-      color: white;
-      border: 2px solid #888;
-      font-size: 18px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #hearts {
-      margin-bottom: 10px;
-    }
-    .heart {
-      width: 24px;
-      height: 24px;
-      background: red;
-      clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 80%, 20% 100%, 0% 35%);
-      display: inline-block;
-      margin-right: 4px;
-    }
+    body { margin: 0; background: #a3d9ff; font-family: monospace; }
+    #gameContainer { display: flex; flex-direction: column; align-items: center; padding: 10px; }
+    canvas { border: 3px solid #333; background: #87ceeb; image-rendering: pixelated; }
+    #controller { display: flex; gap: 10px; margin-top: 10px; }
+    .ctrl-btn { padding: 10px 20px; background: #444; color: white; border: 2px solid #888;
+                font-size: 18px; border-radius: 5px; cursor: pointer; }
+    #hearts { margin-bottom: 10px; }
+    .heart { width: 24px; height: 24px; background: red; clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 80%, 20% 100%, 0% 35%);
+             display: inline-block; margin-right: 4px; }
   </style>
 </head>
 <body>
@@ -62,114 +34,121 @@
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-
     const BLOCK_SIZE = 30;
-    const ROWS = 12;
-    const COLS = 20;
+    const ROWS = 12, COLS = 20;
 
-    const world = [];
-    for (let y = 0; y < ROWS; y++) {
-      world[y] = [];
-      for (let x = 0; x < COLS; x++) {
-        world[y][x] = y > 8 ? "dirt" : null;
-      }
-    }
+    const world = Array.from({length: ROWS}, (_, y) =>
+      Array.from({length: COLS}, (_, x) => y > 8 ? "dirt" : null)
+    );
 
-    // Trees
-    for (let x = 2; x < COLS; x += 4) {
+    for (let x = 1; x < COLS; x += 4) {
       if (world[8][x] === "dirt") {
         world[7][x] = "wood";
         world[6][x] = "wood";
         for (let dx = -1; dx <= 1; dx++) {
           for (let dy = -1; dy <= 1; dy++) {
-            if (x + dx >= 0 && x + dx < COLS) {
-              world[5 + dy][x + dx] = "leaves";
+            const tx = x + dx;
+            const ty = 5 + dy;
+            if (tx >= 0 && tx < COLS && ty >= 0) {
+              world[ty][tx] = "leaves";
             }
           }
         }
       }
     }
 
-    // Pig
-    world[7][15] = "pig";
+    const pig = { x: 14, y: 7 };
 
-    const player = {
-      x: 5,
-      y: 6,
-      vy: 0,
-      width: 1,
-      height: 2,
-      facing: "right",
-      onGround: false,
-      health: 5
+    const creeper = {
+      x: 10, y: 7, direction: 1,
+      exploded: false, explosionFrame: 0
     };
 
-    function drawWorld() {
-      for (let y = 0; y < ROWS; y++) {
-        for (let x = 0; x < COLS; x++) {
-          if (world[y][x]) {
-            if (world[y][x] === "dirt") ctx.fillStyle = "#8b4513";
-            else if (world[y][x] === "wood") ctx.fillStyle = "#a0522d";
-            else if (world[y][x] === "leaves") ctx.fillStyle = "#228b22";
-            else if (world[y][x] === "pig") {
-              drawPig(x, y);
-              continue;
-            } else {
-              ctx.fillStyle = "gray";
-            }
-            ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-            ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-          }
-        }
-      }
+    const player = {
+      x: 5, y: 6, vy: 0, width: 1, height: 2,
+      facing: "right", onGround: false,
+      health: 5, invincible: 0
+    };
+
+    function drawBlock(x, y, type) {
+      ctx.fillStyle = { dirt: "#8b4513", wood: "#a0522d", leaves: "#228b22" }[type] || "gray";
+      ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+      ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
     }
 
-    function drawPig(x, y) {
-      const px = x * BLOCK_SIZE;
-      const py = y * BLOCK_SIZE;
+    function drawPig(pig) {
+      const px = pig.x * BLOCK_SIZE;
+      const py = pig.y * BLOCK_SIZE;
       ctx.fillStyle = "#ff69b4";
-      ctx.fillRect(px + 2, py + 10, 26, 14); // body
-      ctx.fillRect(px + 4, py + 24, 4, 6);   // leg 1
-      ctx.fillRect(px + 22, py + 24, 4, 6);  // leg 2
-      ctx.fillRect(px, py, 20, 14);          // head
+      ctx.fillRect(px + 2, py + 10, 26, 14);
+      ctx.fillRect(px + 4, py + 24, 4, 6);
+      ctx.fillRect(px + 22, py + 24, 4, 6);
+      ctx.fillRect(px, py, 20, 14);
       ctx.fillStyle = "black";
-      ctx.fillRect(px + 3, py + 4, 2, 2);    // eye 1
-      ctx.fillRect(px + 10, py + 4, 2, 2);   // eye 2
+      ctx.fillRect(px + 3, py + 4, 2, 2);
+      ctx.fillRect(px + 10, py + 4, 2, 2);
       ctx.fillStyle = "#ff1493";
-      ctx.fillRect(px + 5, py + 10, 10, 4);  // nose
+      ctx.fillRect(px + 5, py + 10, 10, 4);
       ctx.fillStyle = "#ff69b4";
-      ctx.fillRect(px + 2, py - 2, 4, 4);    // ear 1
-      ctx.fillRect(px + 14, py - 2, 4, 4);   // ear 2
+      ctx.fillRect(px + 2, py - 2, 4, 4);
+      ctx.fillRect(px + 14, py - 2, 4, 4);
+    }
+
+    function drawCreeper(c) {
+      const px = c.x * BLOCK_SIZE;
+      const py = c.y * BLOCK_SIZE;
+
+      if (c.exploded) {
+        const r = c.explosionFrame * 5;
+        ctx.fillStyle = `rgba(255,69,0,${1 - c.explosionFrame / 10})`;
+        ctx.beginPath();
+        ctx.arc(px + BLOCK_SIZE / 2, py + BLOCK_SIZE / 2, r, 0, Math.PI * 2);
+        ctx.fill();
+        return;
+      }
+
+      ctx.fillStyle = "green";
+      ctx.fillRect(px + 5, py, 20, 20);
+      ctx.fillRect(px + 10, py + 20, 10, 20);
+      ctx.fillRect(px + 5, py + 40, 5, 5);
+      ctx.fillRect(px + 20, py + 40, 5, 5);
+      ctx.fillStyle = "black";
+      ctx.fillRect(px + 10, py + 5, 3, 3);
+      ctx.fillRect(px + 17, py + 5, 3, 3);
     }
 
     function drawPlayer() {
       const px = player.x * BLOCK_SIZE;
       const py = player.y * BLOCK_SIZE;
       ctx.fillStyle = "#4169e1";
-      ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE * 2); // body
+      ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE * 2);
       ctx.fillStyle = "#fdbcb4";
-      ctx.fillRect(px + 5, py - BLOCK_SIZE / 2, BLOCK_SIZE - 10, BLOCK_SIZE - 10); // head
+      ctx.fillRect(px + 5, py - BLOCK_SIZE / 2, BLOCK_SIZE - 10, BLOCK_SIZE - 10);
       ctx.fillStyle = "#cccccc";
       if (player.facing === "right") {
-        ctx.fillRect(px + BLOCK_SIZE, py + 10, 10, 5); // pickaxe right
+        ctx.fillRect(px + BLOCK_SIZE, py + 10, 10, 5);
       } else {
-        ctx.fillRect(px - 10, py + 10, 10, 5); // pickaxe left
+        ctx.fillRect(px - 10, py + 10, 10, 5);
       }
     }
 
     function drawHearts() {
-      const heartBar = document.getElementById("hearts");
-      heartBar.innerHTML = "";
+      const bar = document.getElementById("hearts");
+      bar.innerHTML = "";
       for (let i = 0; i < player.health; i++) {
         const heart = document.createElement("div");
         heart.className = "heart";
-        heartBar.appendChild(heart);
+        bar.appendChild(heart);
       }
     }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawWorld();
+      world.forEach((row, y) => row.forEach((cell, x) => {
+        if (cell) drawBlock(x, y, cell);
+      }));
+      drawPig(pig);
+      drawCreeper(creeper);
       drawPlayer();
       drawHearts();
     }
@@ -189,10 +168,9 @@
     }
 
     function mineBelow() {
-      const bx = player.x;
       const by = Math.floor(player.y + player.height);
-      if (by < ROWS && world[by][bx]) {
-        world[by][bx] = null;
+      if (by < ROWS && world[by][player.x]) {
+        world[by][player.x] = null;
       }
     }
 
@@ -214,8 +192,30 @@
       }
     }
 
+    function updateCreeper() {
+      if (creeper.exploded) {
+        creeper.explosionFrame++;
+        return;
+      }
+
+      if (Math.random() < 0.02) creeper.direction *= -1;
+      const newX = creeper.x + creeper.direction;
+      if (newX >= 0 && newX < COLS && !world[creeper.y][newX]) {
+        creeper.x = newX;
+      }
+
+      const touching = Math.abs(creeper.x - player.x) < 1 && Math.abs(creeper.y - player.y) < 1;
+      if (touching && player.invincible <= 0) {
+        creeper.exploded = true;
+        player.health = Math.max(0, player.health - 2);
+        player.invincible = 100;
+      }
+    }
+
     function loop() {
       applyGravity();
+      updateCreeper();
+      if (player.invincible > 0) player.invincible--;
       draw();
       requestAnimationFrame(loop);
     }
@@ -225,3 +225,4 @@
   </script>
 </body>
 </html>
+""")

@@ -2,57 +2,74 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>小学2年生 読解ドリル（1週間分）</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>小学2年生 読解ドリル（1週間・初級）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <style>
     body {
-      font-family: "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
-      background-color: #f0f0f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
+      background-color: #f2f2f2;
       color: #333;
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
+      padding: 10px;
+      margin: 0;
     }
     h1 {
       text-align: center;
       color: #2c3e50;
+      font-size: 1.8em;
+      margin: 20px 0;
     }
     .day {
-      background-color: #fff;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background-color: #ffffff;
+      padding: 16px;
+      margin: 20px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      max-width: 650px;
     }
     .day h2 {
       color: #2980b9;
+      font-size: 1.4em;
+      margin-bottom: 10px;
     }
     .question {
-      margin: 15px 0;
+      margin: 12px 0;
+      line-height: 1.6;
       font-size: 1.1em;
+    }
+    .mc-image {
+      float: right;
+      margin-left: 10px;
+      width: 60px;
+      height: auto;
+    }
+    @media (max-width: 600px) {
+      .mc-image {
+        float: none;
+        display: block;
+        margin: 10px auto;
+      }
+      .day {
+        padding: 12px;
+      }
+      .question {
+        font-size: 1em;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>小学2年生 読解力・思考力ドリル（1週間分）</h1>
+  <h1>小学2年生 読解力・思考力ドリル（1週間分・初級）</h1>
 
-  <!-- 🔽 以下がドリル内容 -->
+  <!-- 🔽 各日分（第1日目〜第7日目） -->
   <div class="day">
+    <img src="https://upload.wikimedia.org/wikipedia/en/2/27/Steve_%28Minecraft%29.png" class="mc-image">
     <h2>第1日目</h2>
-    <div class="question">1. れんとママはスーパーに行きました。れんは何を買いましたか？① パン ② さかな ③ にんじん</div>
-    <div class="question">2. れいはえんぴつを三本もっています。友だちに一本あげました。のこりは何本ですか？① 一本 ② 二本 ③ 三本</div>
-    <div class="question">3. パパは日曜日に何をしましたか？① しごと ② やすみ ③ さんぽ</div>
+    <div class="question"><strong>1.</strong> れんとママはどこに行きましたか？① スーパー ② がっこう ③ こうえん</div>
+    <div class="question"><strong>2.</strong> れいは何本えんぴつをもっていますか？① １本 ② ２本 ③ ３本</div>
+    <!-- ...以下8問（合計10問）を記述... -->
   </div>
 
-  <div class="day">
-    <h2>第2日目</h2>
-    <div class="question">1. クラリスはなぜまい日ノートを見なおしているのでしょう？① ノートがかわいいから ② わすれないため ③ ママにいわれたから</div>
-    <div class="question">2. みなとはどうして朝はやくおきることにしたのでしょう？① あそぶため ② ゲームのため ③ おくれないため</div>
-    <div class="question">3. れいは、はるのことを「すごい」と言いました。どんなところをすごいと思ったのでしょう？（自由記述）</div>
-  </div>
-
-  <!-- 🔁 同様に第3日目〜第7日目まで続けて記述 -->
-  <!-- 必要であれば全21問分、挿入可能です -->
+  <!-- 🔁 以下、第2日目〜第7日目を繰り返す -->
 
 </body>
 </html>

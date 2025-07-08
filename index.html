@@ -14,114 +14,203 @@
       margin: auto;
       max-width: 800px;
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      font-size: 2em;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-      margin-bottom: 30px;
-    }
-    .story-section {
-      background-color: #ffffff;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 15px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-      border: 3px solid #4a90e2;
-    }
-    .questions-section {
-      background-color: #f8f9fa;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 15px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-      border: 3px solid #28a745;
-    }
-    .mc-image {
-      display: block;
-      margin: 0 auto 15px auto;
-      max-width: 120px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .story-text {
-      font-size: 1.2em;
-      line-height: 1.8;
-      margin: 15px 0;
-      padding: 15px;
-      background-color: #f0f8ff;
-      border-radius: 10px;
-      border-left: 4px solid #4a90e2;
-    }
-    .question {
-      margin: 15px 0;
-      line-height: 1.6;
-      font-size: 1.1em;
-      padding: 12px;
-      background-color: #ffffff;
-      border-radius: 8px;
-      border-left: 4px solid #28a745;
-    }
-    .question strong {
-      color: #dc3545;
-      font-size: 1.2em;
-    }
-    .choices {
-      margin-top: 8px;
-      padding-left: 20px;
-    }
-    .choice {
-      margin: 5px 0;
-      cursor: pointer;
-      padding: 5px 10px;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-    .choice:hover {
-      background-color: #e9ecef;
-    }
-    .choice input[type="radio"] {
-      margin-right: 8px;
-    }
-    .submit-btn {
-      display: block;
-      margin: 20px auto;
-      padding: 12px 30px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .submit-btn:hover {
-      background-color: #218838;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-    .result.correct {
-      background-color: #d4edda;
-      color: #155724;
-      border: 2px solid #c3e6cb;
-    }
-    .section-title {
-      font-size: 1.4em;
-      color: #2c3e50;
-      margin-bottom: 15px;
-      text-align: center;
-      font-weight: bold;
-    }
+
+```
+/* 背景キャラクター */
+.bg-character {
+  position: fixed;
+  opacity: 0.1;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.bg-character.creeper {
+  width: 80px;
+  height: 80px;
+  top: 10%;
+  right: 5%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.bg-character.enderman {
+  width: 60px;
+  height: 120px;
+  bottom: 20%;
+  left: 3%;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.bg-character.zombie {
+  width: 70px;
+  height: 90px;
+  top: 60%;
+  right: 10%;
+  animation: float 7s ease-in-out infinite;
+}
+
+.bg-character.skeleton {
+  width: 65px;
+  height: 95px;
+  bottom: 10%;
+  right: 2%;
+  animation: float 5s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2em;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.story-section {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  border: 3px solid #4a90e2;
+  position: relative;
+  z-index: 1;
+}
+
+.questions-section {
+  background-color: rgba(248, 249, 250, 0.95);
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  border: 3px solid #28a745;
+  position: relative;
+  z-index: 1;
+}
+
+.mc-image {
+  display: block;
+  margin: 0 auto 15px auto;
+  max-width: 120px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.story-text {
+  font-size: 1.2em;
+  line-height: 1.8;
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f0f8ff;
+  border-radius: 10px;
+  border-left: 4px solid #4a90e2;
+}
+
+.question {
+  margin: 15px 0;
+  line-height: 1.6;
+  font-size: 1.1em;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.question strong {
+  color: #dc3545;
+  font-size: 1.2em;
+}
+
+.choices {
+  margin-top: 8px;
+  padding-left: 20px;
+}
+
+.choice {
+  margin: 5px 0;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.choice:hover {
+  background-color: #e9ecef;
+}
+
+.choice input[type="radio"] {
+  margin-right: 8px;
+}
+
+.submit-btn {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 30px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: relative;
+  z-index: 1;
+}
+
+.submit-btn:hover {
+  background-color: #218838;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}
+
+.result.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 2px solid #c3e6cb;
+}
+
+.section-title {
+  font-size: 1.4em;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.kanji-highlight {
+  background-color: #fff3cd;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+```
+
   </style>
 </head>
 <body>
+  <!-- 背景キャラクター -->
+  <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/0/02/Creeper_JE2_BE1.png" class="bg-character creeper" alt="Creeper">
+  <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/5/56/Enderman_JE2_BE1.png" class="bg-character enderman" alt="Enderman">
+  <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/f/f5/Zombie_JE3_BE2.png" class="bg-character zombie" alt="Zombie">
+  <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/7e/Skeleton_JE3_BE2.png" class="bg-character skeleton" alt="Skeleton">
+
   <h1>🎮 Minecraft読解ドリル 🎮</h1>
 
   <div class="story-section">
@@ -130,142 +219,6 @@
 
 ```
 <div class="story-text">
-  スティーブは あさ はやく おきました。きょうは たのしい ぼうけんの日です。<br>
-  まず、スティーブは きのみきで きを きって、いえを つくりました。<br>
-  それから、つるはしで いしを ほって、どうくつを たんけんしました。<br>
-  どうくつの なかで、スティーブは きれいな ダイヤモンドを みつけました。<br>
-  よるに なると、スティーブは いえに かえって、あたたかい スープを のみました。<br>
-  「きょうは とても たのしい いちにちだった。」と スティーブは いいました。
-</div>
-
-<img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/a/ab/Diamond_JE3_BE3.png" class="mc-image" alt="Diamond" style="max-width: 80px;">
+  スティーブは <span class="kanji-highlight">朝</span> はやく おきました。きょうは たのしい ぼうけんの <span class="kanji-highlight">日</span>です。<br>
+  まず、スティーブは <span class="kanji-highlight">木</span>のみきで <span class="kanji-highlight">木</span>を きって、<span
 ```
-
-  </div>
-
-  <div class="questions-section">
-    <div class="section-title">❓ もんだい</div>
-
-```
-<div class="question">
-  <strong>1.</strong> スティーブは いつ おきましたか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q1" value="1"> ① あさ はやく</div>
-    <div class="choice"><input type="radio" name="q1" value="2"> ② ひるごろ</div>
-    <div class="choice"><input type="radio" name="q1" value="3"> ③ よるおそく</div>
-  </div>
-</div>
-
-<div class="question">
-  <strong>2.</strong> スティーブは はじめに なにを しましたか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q2" value="1"> ① いえを つくった</div>
-    <div class="choice"><input type="radio" name="q2" value="2"> ② どうくつを たんけんした</div>
-    <div class="choice"><input type="radio" name="q2" value="3"> ③ スープを のんだ</div>
-  </div>
-</div>
-
-<div class="question">
-  <strong>3.</strong> スティーブは どうくつで なにを みつけましたか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q3" value="1"> ① きん</div>
-    <div class="choice"><input type="radio" name="q3" value="2"> ② ダイヤモンド</div>
-    <div class="choice"><input type="radio" name="q3" value="3"> ③ てつ</div>
-  </div>
-</div>
-
-<div class="question">
-  <strong>4.</strong> スティーブは よるに なにを しましたか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q4" value="1"> ① ねむった</div>
-    <div class="choice"><input type="radio" name="q4" value="2"> ② スープを のんだ</div>
-    <div class="choice"><input type="radio" name="q4" value="3"> ③ どうくつに いった</div>
-  </div>
-</div>
-
-<div class="question">
-  <strong>5.</strong> スティーブは きょうの いちにちを どう おもいましたか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q5" value="1"> ① たのしかった</div>
-    <div class="choice"><input type="radio" name="q5" value="2"> ② つまらなかった</div>
-    <div class="choice"><input type="radio" name="q5" value="3"> ③ つかれた</div>
-  </div>
-</div>
-
-<div class="question">
-  <strong>6.</strong> スティーブは きを きるのに なにを つかいましたか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q6" value="1"> ① きのみき</div>
-    <div class="choice"><input type="radio" name="q6" value="2"> ② つるはし</div>
-    <div class="choice"><input type="radio" name="q6" value="3"> ③ ゆみ</div>
-  </div>
-</div>
-
-<div class="question">
-  <strong>7.</strong> スティーブは いしを ほるのに なにを つかいましたか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q7" value="1"> ① きのみき</div>
-    <div class="choice"><input type="radio" name="q7" value="2"> ② つるはし</div>
-    <div class="choice"><input type="radio" name="q7" value="3"> ③ スコップ</div>
-  </div>
-</div>
-
-<div class="question">
-  <strong>8.</strong> この お話で スティーブが した ことの じゅんばんは どれですか？
-  <div class="choices">
-    <div class="choice"><input type="radio" name="q8" value="1"> ① きを きる → どうくつ たんけん → スープを のむ</div>
-    <div class="choice"><input type="radio" name="q8" value="2"> ② どうくつ たんけん → きを きる → スープを のむ</div>
-    <div class="choice"><input type="radio" name="q8" value="3"> ③ スープを のむ → きを きる → どうくつ たんけん</div>
-  </div>
-</div>
-
-<button class="submit-btn" onclick="checkAnswers()">こたえを かくにん</button>
-<div id="result" class="result" style="display: none;"></div>
-```
-
-  </div>
-
-  <script>
-    const correctAnswers = {
-      q1: '1', // あさ はやく
-      q2: '1', // いえを つくった
-      q3: '2', // ダイヤモンド
-      q4: '2', // スープを のんだ
-      q5: '1', // たのしかった
-      q6: '1', // きのみき
-      q7: '2', // つるはし
-      q8: '1'  // きを きる → どうくつ たんけん → スープを のむ
-    };
-
-    function checkAnswers() {
-      let score = 0;
-      let total = Object.keys(correctAnswers).length;
-      
-      for (let question in correctAnswers) {
-        const selectedAnswer = document.querySelector(`input[name="${question}"]:checked`);
-        if (selectedAnswer && selectedAnswer.value === correctAnswers[question]) {
-          score++;
-        }
-      }
-      
-      const resultDiv = document.getElementById('result');
-      resultDiv.style.display = 'block';
-      resultDiv.className = 'result correct';
-      
-      if (score === total) {
-        resultDiv.innerHTML = `🎉 すばらしい！ ぜんぶ せいかい！ ${score}/${total} もん せいかい！ 🎉`;
-      } else if (score >= total * 0.8) {
-        resultDiv.innerHTML = `👍 よく できました！ ${score}/${total} もん せいかい！ がんばりました！`;
-      } else if (score >= total * 0.6) {
-        resultDiv.innerHTML = `😊 もう すこし がんばろう！ ${score}/${total} もん せいかい！`;
-      } else {
-        resultDiv.innerHTML = `📚 もう いちど お話を よんで チャレンジしてみよう！ ${score}/${total} もん せいかい！`;
-      }
-      
-      // スクロールして結果を表示
-      resultDiv.scrollIntoView({ behavior: 'smooth' });
-    }
-  </script>
-
-</body>
-</html>
